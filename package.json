@@ -8,21 +8,48 @@
     "vscode": "^1.15.0"
   },
   "categories": [
-    "Other"
+    "Languages",
+    "Debuggers",
+    "Snippets"
   ],
   "activationEvents": [
-    "onView:nodeDependencies"
+    "onView:eggDependencies"
   ],
   "main": "./out/src/extension",
   "contributes": {
     "views": {
       "explorer": [
         {
-          "id": "nodeDependencies",
-          "name": "Node Dependencies"
+          "id": "eggDependencies",
+          "name": "Egg Dependencies"
         }
       ]
-    }
+    },
+    "commands": [
+      {
+        "command": "eggDependencies.refreshEntry",
+        "title": "Refresh",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "eggDependencies.refreshEntry",
+          "when": "view == eggDependencies",
+          "group": "navigation"
+        }
+      ]
+    },
+    "snippets": [
+      {
+        "language": "javascript",
+        "path": "./snippets/egg.json"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "tsc -p ./",

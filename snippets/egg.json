@@ -1,0 +1,58 @@
+{
+  "config": {
+    "prefix": "egg config",
+    "body": [
+      "'use strict';",
+      "module.exports = appInfo => {",
+      "  const config = {};",
+      "",
+      "  /**",
+      "   * @member Config#$2",
+      "   * @property {String} SOME_KEY - some description",
+      "   */",
+      "  config.$1 = {",
+      "    $2",
+      "  };",
+      "",
+      "  return config;",
+      "};",
+      ""
+    ]
+  },
+  "service": {
+    "prefix": "egg service",
+    "body": [
+      "'use strict';",
+      "module.exports = app => {",
+      "  class $1Service extends app.Service {",
+      "    $2",
+      "  }",
+      "  return $1Service;",
+      "};",
+      ""
+    ]
+  },
+  "controller": {
+    "prefix": "egg controller",
+    "body": [
+      "'use strict';",
+      "module.exports = app => {",
+      "  class $1Controller extends app.Controller {",
+      "    $2",
+      "  }",
+      "  return $1Controller;",
+      "};",
+      ""
+    ]
+  },
+  "plugin": {
+    "prefix": "egg plugin",
+    "body": [
+      "exports.$1 = {",
+      "  enable: true,",
+      "  package: '$2',",
+      "};",
+      ""
+    ]
+  }
+}
