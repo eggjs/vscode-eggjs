@@ -1,5 +1,9 @@
 # vscode-eggjs README
 
+[![Marketplace Version](https://vsmarketplacebadge.apphb.com/version/atian25.eggjs.svg)](https://marketplace.visualstudio.com/items?itemName=atian25.eggjs)
+[![Installs](https://vsmarketplacebadge.apphb.com/installs/atian25.eggjs.svg)](https://marketplace.visualstudio.com/items?itemName=atian25.eggjs)
+[![Rating](https://vsmarketplacebadge.apphb.com/rating/atian25.eggjs.svg)](https://marketplace.visualstudio.com/items?itemName=atian25.eggjs)
+
 vscode extension for [eggjs]
 
 ## Features

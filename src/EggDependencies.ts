@@ -4,11 +4,12 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as globby from 'globby';
+import { TreeItem, FileTreeItem, UrlTreeItem } from './TreeItem';
 
-export class EggDependenciesProvider implements vscode.TreeDataProvider<Node> {
+export class EggDependenciesProvider implements vscode.TreeDataProvider<TreeItem> {
 
-  private _onDidChangeTreeData: vscode.EventEmitter<Node | undefined> = new vscode.EventEmitter<Node | undefined>();
-  readonly onDidChangeTreeData: vscode.Event<Node | undefined> = this._onDidChangeTreeData.event;
+  private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined> = new vscode.EventEmitter<TreeItem | undefined>();
+  readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined> = this._onDidChangeTreeData.event;
 
   constructor(private workspaceRoot: string) {
 
@@ -18,11 +19,11 @@ export class EggDependenciesProvider implements vscode.TreeDataProvider<Node> {
     this._onDidChangeTreeData.fire();
   }
 
-  getTreeItem(element: Node): vscode.TreeItem {
+  getTreeItem(element: TreeItem): vscode.TreeItem {
     return element;
   }
 
-  getChildren(element?: Node): Thenable<Node[]> {
+  getChildren(element?: TreeItem): Thenable<TreeItem[]> {
     if (!this.workspaceRoot) {
       vscode.window.showInformationMessage('No dependency in empty workspace');
       return Promise.resolve([]);
@@ -32,7 +33,7 @@ export class EggDependenciesProvider implements vscode.TreeDataProvider<Node> {
       if (element) {
         resolve(element.getChildren());
       } else {
-        resolve(new RootNode('', this.workspaceRoot).getChildren());
+        resolve(new RootTreeItem('', this.workspaceRoot).getChildren());
       }
     });
   }
@@ -53,19 +54,7 @@ const ICON = {
   },
 };
 
-abstract class Node extends vscode.TreeItem {
-  constructor(
-    public readonly label: string,
-    public readonly leaf: boolean = false,
-  ) {
-    super(label, leaf ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed);
-    this.contextValue = 'dependency';
-  }
-
-  async getChildren(): Promise<Node[]> { return [] };
-}
-
-class RootNode extends Node {
+class RootTreeItem extends TreeItem {
   constructor(
     public readonly label: string,
     public readonly path: string,
@@ -73,19 +62,19 @@ class RootNode extends Node {
     super(label, false);
   }
 
-  async getChildren(): Promise<Node[]> {
+  async getChildren(): Promise<TreeItem[]> {
     const cwd = path.join(this.path, 'node_modules');
     const result = await globby([ 'egg*/', '@*/egg*/' ], { cwd });
     // console.log(result);
     const nodeList = result.map(item => {
-      const node = new EggNode(item.substring(0, item.length - 1), path.join(cwd, item));
+      const node = new EggTreeItem(item.substring(0, item.length - 1), path.join(cwd, item));
       return node;
     });
     return nodeList;
   }
 }
 
-class EggNode extends Node {
+class EggTreeItem extends TreeItem {
   constructor(
     public readonly label: string,
     public readonly path: string,
@@ -93,59 +82,28 @@ class EggNode extends Node {
     super(label, false);
   }
 
-  async getChildren(): Promise<Node[]> {
+  async getChildren(): Promise<TreeItem[]> {
     const result = [];
     const pkgInfo = require(path.join(this.path, 'package.json'));
 
     // README, GITHUB
-    const readmeNode = new FileNode('README', path.join(this.path, 'README.md'), ICON.README);
+    const readmeNode = new FileTreeItem('README', path.join(this.path, 'README.md'), ICON.README);
     result.push(readmeNode);
 
     if (pkgInfo.homepage) {
-      const homeNode = new UrlNode('HomePage', pkgInfo.homepage, ICON.HOME);
+      const homeNode = new UrlTreeItem('HomePage', pkgInfo.homepage, ICON.HOME);
       result.push(homeNode);
     }
 
     let registryUrl = pkgInfo.publishConfig && pkgInfo.publishConfig.registry;
     if (registryUrl && registryUrl.includes('npm.alibaba-inc.com')) {
-      const npmNode = new UrlNode('tnpm', `http://web.npm.alibaba-inc.com/package/${this.label}`, ICON.NPM);
+      const npmNode = new UrlTreeItem('tnpm', `http://web.npm.alibaba-inc.com/package/${this.label}`, ICON.NPM);
       result.push(npmNode);
     } else {
-      const npmNode = new UrlNode('npm', `https://www.npmjs.com/package/${this.label}`, ICON.NPM);
+      const npmNode = new UrlTreeItem('npm', `https://www.npmjs.com/package/${this.label}`, ICON.NPM);
       result.push(npmNode);
     }
 
     return result;
-  }
-}
-
-class FileNode extends Node {
-  constructor(
-    public readonly label: string,
-    public readonly path: string,
-    public readonly iconPath: string,
-  ) {
-    super(label, true);
-    // TODO: only expand one
-    this.command = {
-      command: 'extension.openFile',
-      title: '',
-      arguments: [ path ],
-    };
-  }
-}
-
-class UrlNode extends Node {
-  constructor(
-    public readonly label: string,
-    public readonly url: string,
-    public readonly iconPath: string,
-  ) {
-    super(label, true);
-    this.command = {
-      command: 'vscode.open',
-      title: '',
-      arguments: [ vscode.Uri.parse(url) ],
-    };
   }
 }
