@@ -2,6 +2,7 @@
 
 import * as vscode from 'vscode';
 import { EggDependenciesProvider } from './EggDependencies';
+import { EggConfigProvider } from './EggConfig';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -13,6 +14,10 @@ export function activate(context: vscode.ExtensionContext) {
     const eggDependenciesProvider = new EggDependenciesProvider(rootPath);
     window.registerTreeDataProvider('eggDependencies', eggDependenciesProvider);
     commands.registerCommand('eggDependencies.refreshEntry', () => eggDependenciesProvider.refresh());
+
+    const eggConfigProvider = new EggConfigProvider(rootPath);
+    window.registerTreeDataProvider('eggConfig', eggConfigProvider);
+    commands.registerCommand('eggConfig.refreshEntry', () => eggConfigProvider.refresh());
 
     commands.registerCommand('extension.openFile', async filePath => {
         const doc = await workspace.openTextDocument(Uri.file(filePath));

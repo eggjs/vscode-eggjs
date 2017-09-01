@@ -4,6 +4,11 @@
   "description": "vscode extension for https://eggjs.org/",
   "version": "0.0.1",
   "publisher": "TZ",
+  "homepage": "https://github.com/atian25/vscode-eggjs",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:atian25/vscode-eggjs.git"
+  },
   "engines": {
     "vscode": "^1.15.0"
   },
@@ -13,7 +18,8 @@
     "Snippets"
   ],
   "activationEvents": [
-    "onView:eggDependencies"
+    "onView:eggDependencies",
+    "onView:eggConfig"
   ],
   "main": "./out/src/extension",
   "contributes": {
@@ -22,12 +28,24 @@
         {
           "id": "eggDependencies",
           "name": "Egg Dependencies"
+        },
+        {
+          "id": "eggConfig",
+          "name": "Egg Config"
         }
       ]
     },
     "commands": [
       {
         "command": "eggDependencies.refreshEntry",
+        "title": "Refresh",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "eggConfig.refreshEntry",
         "title": "Refresh",
         "icon": {
           "light": "resources/light/refresh.svg",
@@ -40,6 +58,11 @@
         {
           "command": "eggDependencies.refreshEntry",
           "when": "view == eggDependencies",
+          "group": "navigation"
+        },
+        {
+          "command": "eggConfig.refreshEntry",
+          "when": "view == eggConfig",
           "group": "navigation"
         }
       ]
@@ -59,7 +82,11 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "dependencies": {
-    "globby": "^6.1.0"
+    "clear-module": "^2.1.0",
+    "globby": "^6.1.0",
+    "is-type-of": "^1.2.0",
+    "mz": "^2.6.0",
+    "node-homedir": "^1.0.0"
   },
   "devDependencies": {
     "typescript": "^2.0.3",

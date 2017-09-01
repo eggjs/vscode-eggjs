@@ -31,3 +31,5 @@ We pass the function containing the implementation of the command as the second 
 * make changes to `test/extension.test.ts` or create new test files inside the `test` folder
     * by convention, the test runner will only consider files matching the name pattern `**.test.ts`
     * you can create folders inside the `test` folder to structure your tests any way you want
+
+https://atian25.visualstudio.com/_details/security/tokens

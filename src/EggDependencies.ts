@@ -2,9 +2,9 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
+import { fs } from 'mz';
 import * as globby from 'globby';
-import { TreeItem, FileTreeItem, UrlTreeItem } from './TreeItem';
+import { TreeItem, FileTreeItem, UrlTreeItem, ICON } from './TreeItem';
 
 export class EggDependenciesProvider implements vscode.TreeDataProvider<TreeItem> {
 
@@ -12,7 +12,6 @@ export class EggDependenciesProvider implements vscode.TreeDataProvider<TreeItem
   readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined> = this._onDidChangeTreeData.event;
 
   constructor(private workspaceRoot: string) {
-
   }
 
   refresh(): void {
@@ -38,21 +37,6 @@ export class EggDependenciesProvider implements vscode.TreeDataProvider<TreeItem
     });
   }
 }
-
-const ICON = {
-  NPM: {
-    light: path.join(__dirname, '../../resources/light/npm.svg'),
-    dark: path.join(__dirname, '../../resources/dark/npm.svg'),
-  },
-  HOME: {
-    light: path.join(__dirname, '../../resources/light/home.svg'),
-    dark: path.join(__dirname, '../../resources/dark/home.svg'),
-  },
-  README: {
-    light: path.join(__dirname, '../../resources/light/markdown.svg'),
-    dark: path.join(__dirname, '../../resources/dark/markdown.svg'),
-  },
-};
 
 class RootTreeItem extends TreeItem {
   constructor(

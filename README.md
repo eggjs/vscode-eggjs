@@ -6,11 +6,13 @@
 
 vscode extension for [eggjs]
 
+https://github.com/atian25/vscode-eggjs
+
 ## Features
 
 - [x] snippets
 - [x] list egg dependencies
-- [ ] list app config
+- [x] list app config
 - [ ] startDebug
 - [ ] init vscode settings
 

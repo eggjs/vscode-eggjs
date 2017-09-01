@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 46.2 (44496) - http://www.bohemiancoding.com/sketch -->
+    <title>中括号</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="中括号" fill="#F5DE19">
+            <g id="Group" transform="translate(5.000000, 5.000000)">
+                <polygon id="[" points="6 22 0 22 0 0 6 0 6 1.64142187 2.51696416 1.64142187 2.51696416 20.3585781 6 20.3585781"></polygon>
+                <polygon id="[" transform="translate(19.000000, 11.000000) scale(-1, 1) translate(-19.000000, -11.000000) " points="22 22 16 22 16 0 22 0 22 1.64147114 18.5169642 1.64147114 18.5169642 20.3585289 22 20.3585289"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>
