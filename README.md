@@ -16,6 +16,7 @@ https://github.com/atian25/vscode-eggjs
 - [ ] startDebug
 - [ ] init vscode settings
 
+![](https://github.com/atian25/vscode-eggjs/raw/master/snapshot.png)
 
 ## Requirements
 

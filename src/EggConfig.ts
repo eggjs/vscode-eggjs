@@ -57,7 +57,8 @@ class RootTreeItem extends TreeItem {
   }
 
   async getChildren(): Promise<TreeItem[]> {
-    const result = await globby([ 'config/config.*.js' ], { cwd: this.path });
+    const cwd = path.join(this.path, 'config');
+    const result = await globby([ 'config.*.js' ], { cwd });
     const pkgInfo = require(path.join(this.path, 'package.json'));
     const HOME = homedir();
 
@@ -67,9 +68,9 @@ class RootTreeItem extends TreeItem {
         name: pkgInfo.name,
         baseDir: this.path,
         HOME,
-        root: (item === 'config/config.local.js' || item === 'config/config.unittest.js') ? this.path : HOME,
+        root: (item === 'config.local.js' || item === 'config.unittest.js') ? this.path : HOME,
       };
-      const node = new EggConfigTreeItem(item, path.join(this.path, item), appInfo);
+      const node = new EggConfigTreeItem(item, path.join(cwd, item), appInfo);
       return node;
     });
     return nodeList;
@@ -92,7 +93,7 @@ class EggConfigTreeItem extends TreeItem {
       config = config(this.appInfo);
     }
 
-    const root = new JSONTreeItem('', this.path, config);
+    const root = new JSONTreeItem(this.path, '', config);
     const result = await root.getChildren();
     return result;
   }

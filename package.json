@@ -1,9 +1,9 @@
 {
-  "name": "vscode-eggjs",
-  "displayName": "vscode-eggjs",
+  "name": "eggjs",
+  "displayName": "eggjs",
   "description": "vscode extension for https://eggjs.org/",
-  "version": "0.0.1",
-  "publisher": "TZ",
+  "version": "0.0.4",
+  "publisher": "atian25",
   "homepage": "https://github.com/atian25/vscode-eggjs",
   "repository": {
     "type": "git",
@@ -12,6 +12,7 @@
   "engines": {
     "vscode": "^1.15.0"
   },
+  "icon": "resources/eggjs.png",
   "categories": [
     "Languages",
     "Debuggers",
