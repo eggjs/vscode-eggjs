@@ -6,7 +6,7 @@
 
 vscode extension for [eggjs]
 
-https://github.com/atian25/vscode-eggjs
+https://github.com/eggjs/vscode-eggjs
 
 ## Features
 
@@ -16,7 +16,7 @@ https://github.com/atian25/vscode-eggjs
 - [ ] startDebug
 - [ ] init vscode settings
 
-![](https://github.com/atian25/vscode-eggjs/raw/master/snapshot.png)
+![](https://github.com/eggjs/vscode-eggjs/raw/master/snapshot.png)
 
 ## Requirements
 

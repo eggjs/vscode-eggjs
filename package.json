@@ -2,12 +2,12 @@
   "name": "eggjs",
   "displayName": "eggjs",
   "description": "vscode extension for https://eggjs.org/",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "atian25",
-  "homepage": "https://github.com/atian25/vscode-eggjs",
+  "homepage": "https://github.com/eggjs/vscode-eggjs",
   "repository": {
     "type": "git",
-    "url": "git@github.com:atian25/vscode-eggjs.git"
+    "url": "git@github.com:eggjs/vscode-eggjs.git"
   },
   "engines": {
     "vscode": "^1.15.0"
