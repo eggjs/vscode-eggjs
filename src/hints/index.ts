@@ -1,199 +1,227 @@
-import * as fs from 'fs';
+import { fs } from 'mz';
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as globby from 'globby';
 type CMap = { key: string, value: vscode.CompletionItem };
-type Map = { key: string, value: string};
+type Map = { key: string, value: string };
 const classMethodMap = {} as Map;
 const methodDefineMap = {} as Map;
 const serviceMap = {};
-var patt = new RegExp("\\* (\\w+)\\((.*)\\) \\{","g");
-var serviceReg = new RegExp("\\*?.*?(\\w+).*?\\((.*)\\) \\{","g");
-
-exports.Hints = {
-  isChair(): boolean{
-    return true;
-  },
-  init(): void{
-    // 文件目录读取
-    if (vscode.workspace.rootPath) {
-      // chair默认facade文件
-      this.getFacade(vscode.workspace.rootPath + '/app/proxy/');
-      // chair默认service文件
-      this.getServices(vscode.workspace.rootPath + '/app/service/');
-    }
-  },
-  getFacade(facadePath: string) {
-    fs.readdirSync(facadePath)
-      .filter(fname => fname.endsWith('.js'))
-      .forEach(fname => {
-        const className = fname.replace('.js', '');
-        classMethodMap[className] = {};
-        const content = fs.readFileSync(facadePath + fname, 'utf8');
-        let result;
-        while ((result = patt.exec(content)) != null)  {
-          const method = result[1];
-          const params = result[2];
-          classMethodMap[className][method] = {
-            params: params,
-            path: facadePath + fname,
-            line: 0,
-            start: 0,
-            end: 0,
-          };
+const patt = new RegExp("\\* (\\w+)\\((.*)\\) \\{", "g");
+const serviceReg = new RegExp("\\*?.*?(\\w+).*?\\((.*)\\) \\{", "g");
+function readDir(dirPath, fileArr = []) {
+    const stat = fs.statSync(dirPath);
+    // console.log(stat.isDirectory(), stat.isFile())
+    if (stat) { //判断文件、文件目录是否存在
+        if (stat.isFile()) {
+            fileArr.push(dirPath);
+        } else if (stat.isDirectory()) {
+            const files = fs.readdirSync(dirPath);
+            if (files && files.length > 0) {
+                files.forEach(function (file) {
+                    readDir(path.join(dirPath, file), fileArr);
+                });
+            }
         }
-      });
-  },
-  getServices(servicePath: string) {
-    fs.readdirSync(servicePath)
-      .filter(fname => fname.endsWith('.js'))
-      .forEach(fname => {
-        const className = fname.replace('.js', '').replace(/_[a-z]/g, function(str){
-          if (str.length === 2 && str[0] === '_') {
-            return str[1].toUpperCase();
-          }
+    } else {
+        console.info('根目录不存在.');
+    }
+}
+class Hints  {
+    private baseRoot: String;
+    private serviceArr = [] as Array<string>;
+    private proxyArr = []  as Array<string>;
+    private proxyMethod = {} as Object;
+    private serviceMap = {} as { key: string, value: object };
+    private serviceCompletionItems = [] as Array<vscode.CompletionItem>;
+    private proxyCompletionItems= [] as Array<vscode.CompletionItem>;
+    private proxyMethodCompletionItems= {} as CMap;
+    private serviceMethodCompletionItems= {} as CMap;
+    constructor(baseRoot: String){
+        this.baseRoot = baseRoot;
+        this.init();
+    }
+    isChair(): boolean {
+        return true;
+    }
+    async init() {
+        // 文件目录读取
+        if (vscode.workspace.rootPath) {
+            // chair: facade文件
+            await this.getFacade(vscode.workspace.rootPath + '/app/proxy/');
+            // chair: service文件
+            await this.getServices(vscode.workspace.rootPath + '/app/service/');
+            this.generateServiceCompletionItems();
+            this.getServiceMethodCompletionItems();
+            this.generateProxyCompletionItems();
+            this.generateProxyMethodCompletionItems();
+        }
+    }
+    async getFacade(facadePath: string) {
+        const result = await globby([ '*.js', '**/*.js' ], { cwd: facadePath});
+        result.forEach(fname => {
+            const className = fname.replace('.js', '');
+            this.proxyMethod[className] = {};
+            const content = fs.readFileSync(facadePath + fname, 'utf8');
+            let result;
+            while ((result = patt.exec(content)) != null) {
+                const method = result[1];
+                const params = result[2];
+                this.proxyMethod[className][method] = {
+                    params: params,
+                    path: facadePath + fname,
+                    line: 0,
+                    start: 0,
+                    end: 0,
+                };
+            }
         });
-        serviceMap[className] = {};
-        const content = fs.readFileSync(servicePath + fname, 'utf8');
-        let result;
-        while ((result = serviceReg.exec(content)) != null)  {
-          const method = result[1];
-          const params = result[2];
-          serviceMap[className][method] = {
-            params: params,
-            path: servicePath + fname,
-            line: 0,
-            start: 0,
-            end: 0,
-          };
+        return result;
+    }
+    async getServices(servicePath: string) {
+        const result = await globby([ '*.js', '**/*.js' ], { cwd: servicePath});
+        result.forEach(fname => {
+            // wealth/community.js
+            // gray.js
+            // jubao_headline.js
+            const className = fname.replace('.js', '').replace(/_[a-z]/g, function (str) {
+                if (str.length === 2 && str[0] === '_') {
+                    return str[1].toUpperCase();
+                }
+            }).replace(path.sep, '.');
+            this.serviceMap[className] = {};
+            const content = fs.readFileSync(servicePath + fname, 'utf8');
+            let result;
+            while ((result = serviceReg.exec(content)) != null) {
+                const method = result[1];
+                const params = result[2];
+                this.serviceMap[className][method] = {
+                    params: params,
+                    path: servicePath + fname,
+                    line: 0,
+                    start: 0,
+                    end: 0,
+                };
+            }
+        });
+        return result;
+    }
+    generateServiceCompletionItems(){
+        const items = [];
+        console.log('generateServiceCompletionItems');
+        for (let className in this.serviceMap) {
+            let item = new vscode.CompletionItem(className, vscode.CompletionItemKind.Class);
+            item.insertText = className;
+            item.sortText = '0';
+            item.documentation = 'doc-comment.';
+            items.push(item);
         }
-        
-    });
-  },
-  getMethods():object {
-    return methodDefineMap;
-  },
-  getServiceCompletionItems(): Array<vscode.CompletionItem>{
-    const items = [];
-    for (let className in serviceMap) {
-      let item = new vscode.CompletionItem(className, vscode.CompletionItemKind.Class);
-      item.insertText = className;
-      item.sortText = '0';
-      item.documentation = 'doc-comment.';
-      items.push(item);
+        this.serviceCompletionItems = items;
     }
-    return items;
-  },
-  getProxyCompletionItems(): Array<vscode.CompletionItem>{
-    const items = [];
-    for (let className in classMethodMap) {
-      let item = new vscode.CompletionItem(className, vscode.CompletionItemKind.Class);
-      item.insertText = className;
-      item.sortText = '0';
-      item.documentation = 'doc-comment.';
-      items.push(item);
+    generateProxyCompletionItems() {
+        const items = [];
+        for (let className in this.proxyMethod) {
+            let item = new vscode.CompletionItem(className, vscode.CompletionItemKind.Class);
+            item.insertText = className;
+            item.sortText = '0';
+            item.documentation = 'doc-comment.';
+            items.push(item);
+        }
+        this.proxyCompletionItems = items;
     }
-    return items;
-  },
-  getProxyArr(): Array<string>{
-    const items = [];
-    for (let className in classMethodMap) {
-      items.push(className);
+    generateProxyMethodCompletionItems() {
+        const items = {} as CMap;
+        for (let className in this.proxyMethod) {
+            if (!items[className]) {
+                items[className] = [];
+            }
+            for (let method in this.proxyMethod[className]) {
+                const methodOb = this.proxyMethod[className][method];
+                let item = new vscode.CompletionItem(method, vscode.CompletionItemKind.Property);
+                item.insertText = method + '(' + methodOb.params + ');';
+                item.documentation = 'doc-comment.';
+                item.sortText = '0';
+                items[className].push(item);
+                methodDefineMap[className + '.' + method] = methodOb.path;
+            }
+        }
+        this.proxyMethodCompletionItems = items;
     }
-    return items;
-  },
-  getServiceArr(): Array<string>{
-    const items = [];
-    for (let className in serviceMap) {
-      items.push(className);
+    getServiceMethodCompletionItems() {
+        const items = {} as CMap;
+        for (let className in this.serviceMap) {
+            if (!items[className]) {
+                items[className] = [];
+            }
+            for (let method in this.serviceMap[className]) {
+                const methodOb = this.serviceMap[className][method];
+                let item = new vscode.CompletionItem(method, vscode.CompletionItemKind.Property);
+                item.insertText = method + '(' + methodOb.params + ');';
+                item.documentation = 'doc-comment.';
+                item.sortText = '0';
+                items[className].push(item);
+                methodDefineMap[className + '.' + method] = methodOb.path;
+            }
+        }
+        this.serviceMethodCompletionItems= items;
     }
-    return items;
-  },
-  getProxyMethodCompletionItems(): CMap{
-    const items = {} as CMap;
-    for (let className in classMethodMap) {
-      if (!items[className]) {
-        items[className] = [];
-      }
-      for (let method in classMethodMap[className]) {
-        const methodOb = classMethodMap[className][method];
-        let item = new vscode.CompletionItem(method, vscode.CompletionItemKind.Property);
-        item.insertText = method + '(' + methodOb.params + ');';
-        item.documentation = 'doc-comment.';
-        item.sortText = '0';
-        items[className].push(item);
-        methodDefineMap[className + '.' + method] = methodOb.path;
-      }
+    getMethodDefineItems(): Map {
+        return methodDefineMap;
     }
-    return items;
-  },
-  getServiceMethodCompletionItems(): CMap{
-    const items = {} as CMap;
-    for (let className in serviceMap) {
-      if (!items[className]) {
-        items[className] = [];
-      }
-      for (let method in serviceMap[className]) {
-        const methodOb = serviceMap[className][method];
-        let item = new vscode.CompletionItem(method, vscode.CompletionItemKind.Property);
-        item.insertText = method + '(' + methodOb.params + ');';
-        item.documentation = 'doc-comment.';
-        item.sortText = '0';
-        items[className].push(item);
-        methodDefineMap[className + '.' + method] = methodOb.path;
-      }
+    isProxyFacade(document: vscode.TextDocument, position: vscode.Position): boolean {
+        const lineText = document.lineAt(position).text;
+        const pos = position.character;
+
+        // 检查是不是 proxy.
+        return lineText.substring(pos - 6, pos) === 'proxy.';
     }
-    return items;
-  },
-  getMethodDefineItems(): Map{
-    return methodDefineMap;
-  },
-  isProxyFacade(document: vscode.TextDocument, position: vscode.Position): boolean {
-    const lineText = document.lineAt(position).text;
-    const pos = position.character;
-  
-    // 检查是不是 proxy.
-    return lineText.substring(pos - 6, pos) === 'proxy.';
-  },
-  isProxyFacadeMethod(document: vscode.TextDocument, position: vscode.Position, facades: Array<string>): string|null {
-    const lineText = document.lineAt(position).text;
-    const word = this.getWordBeforePosition(document, position);
-    // 检查是不是 proxy.
-    if (facades.indexOf(word) > -1) {
-      return word;
+    isProxyFacadeMethod(document: vscode.TextDocument, position: vscode.Position, facades: Array<string>): string | null {
+        const lineText = document.lineAt(position).text;
+        const word = this.getWordBeforePosition(document, position);
+        // 检查是不是 proxy.
+        if (facades.indexOf(word) > -1) {
+            return word;
+        }
+        return null;
     }
-    return null;
-  },
-  getWordBeforePosition(document: vscode.TextDocument, position: vscode.Position):string {
-    const lineTextBefore = this.getTextBeforePosition(document, position);
-    const lastPos = lineTextBefore.lastIndexOf('.');
-    const word = lineTextBefore.substring(lastPos + 1, position.character - 1);
-    return word;
-  },
-  getTextBeforePosition(document: vscode.TextDocument, position: vscode.Position): string {
-    const lineText = document.lineAt(position).text;
-    return lineText.substring(0, position.character - 1);
-  },
-  hasComplecationItem(document: vscode.TextDocument, position: vscode.Position): null | vscode.CompletionItem {
-    const word = this.getWordBeforePosition(document, position);
-    const serviceArr = this.getServiceArr();
-    const proxyArr = this.getProxyArr();
-    const proxyCompletionItems = this.getProxyCompletionItems();
-    const completionItems = this.getProxyMethodCompletionItems();
-    const serviceCompletionItems = this.getServiceCompletionItems();
-    const serviceMethodCompletionItems = this.getServiceMethodCompletionItems();
-    // this.proxy.
-    if (word === 'proxy') {
-        return proxyCompletionItems;
+    getWordBeforePosition(document: vscode.TextDocument, position: vscode.Position): string {
+        const lineTextBefore = this.getTextBeforePosition(document, position);
+        return lineTextBefore;
     }
-    if (proxyArr.indexOf(word) > -1 && completionItems[word]) {
-        return completionItems[word];
+    getTextBeforePosition(document: vscode.TextDocument, position: vscode.Position): string {
+        const lineText = document.lineAt(position).text;
+        return lineText.substring(0, position.character - 1);
     }
-    // this.service
-    if (word === 'service') {
-        return serviceCompletionItems;
+    hasCompletionItem(document: vscode.TextDocument, position: vscode.Position): Array<vscode.CompletionItem> {
+        const lineText = this.getTextBeforePosition(document, position);
+        const serviceArr = this.serviceArr;
+        const proxyArr = this.proxyArr;
+        const proxyCompletionItems = this.proxyCompletionItems;
+        const completionItems = this.proxyMethodCompletionItems;
+        const serviceCompletionItems = this.serviceCompletionItems;
+        const serviceMethodCompletionItems = this.serviceMethodCompletionItems;
+        // this.proxy.
+        if (lineText.endsWith('proxy')) {
+            return proxyCompletionItems;
+        }
+        console.log('lineText', lineText, serviceCompletionItems);
+        // this.service
+        if (lineText.endsWith('service')) {
+            return serviceCompletionItems;
+        }
+        // this.proxy.fundFacade
+        for (let key in completionItems) {
+            if (lineText.endsWith(key)) {
+                return completionItems[key];
+            }
+        }
+        // this.proxy.fundFacade
+        for (let key in serviceMethodCompletionItems) {
+            if (lineText.endsWith(key)) {
+                return serviceMethodCompletionItems[key];
+            }
+        }
+        return null;
     }
-    if (serviceArr.indexOf(word) > -1 && serviceMethodCompletionItems[word]) {
-        return serviceMethodCompletionItems[word];
-    }
-    return null;
-  }
 };
+export default Hints;

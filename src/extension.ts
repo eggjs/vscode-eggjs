@@ -3,9 +3,9 @@
 import * as vscode from 'vscode';
 import { EggDependenciesProvider } from './EggDependencies';
 import { EggConfigProvider } from './EggConfig';
-import { Hints }  from './hints/index';
-const DefinitionProvider = require('./hints/providers/definition');
-Hints.init();
+import Hints from './hints/index';
+const hint = new Hints(vscode.workspace.rootPath);
+//const DefinitionProvider = require('./hints/providers/definition');
 const DOCUMENT_SELECTOR = ['javascript'];
 
 // this method is called when your extension is activated
@@ -32,15 +32,9 @@ export function activate(context: vscode.ExtensionContext) {
             await commands.executeCommand('workbench.action.focusActiveEditorGroup');
         }
     });
-     //======================================
-	//          智能提示	
-	//======================================	
-	const completion = vscode.languages.registerCompletionItemProvider(DOCUMENT_SELECTOR, {
-		provideCompletionItems: (document, position) => {
-            return Hints.hasComplecationItem(document, position); 
-		},
-		resolveCompletionItem: item => { 
-            return item;
+    const completion = vscode.languages.registerCompletionItemProvider(DOCUMENT_SELECTOR, {
+        provideCompletionItems: (document, position) => {
+            return hint.hasCompletionItem(document, position); 
         }
     }, '.');
     const subscriptions = context.subscriptions;
