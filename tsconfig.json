@@ -3,6 +3,8 @@
         "module": "commonjs",
         "target": "es6",
         "outDir": "out",
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
         "lib": [
             "es6"
         ],
@@ -12,5 +14,8 @@
     "exclude": [
         "node_modules",
         ".vscode-test"
+    ],
+    "include": [
+        "src/**/*"
     ]
 }

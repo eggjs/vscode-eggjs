@@ -20,7 +20,8 @@
   ],
   "activationEvents": [
     "onView:eggDependencies",
-    "onView:eggConfig"
+    "onView:eggConfig",
+    "onLanguage:javascript"
   ],
   "main": "./out/src/extension",
   "contributes": {
