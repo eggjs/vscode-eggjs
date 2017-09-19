@@ -11,7 +11,6 @@ const patt = new RegExp("\\* (\\w+)\\((.*)\\) \\{", "g");
 const serviceReg = new RegExp("\\*?.*?(\\w+).*?\\((.*)\\) \\{", "g");
 function readDir(dirPath, fileArr = []) {
     const stat = fs.statSync(dirPath);
-    // console.log(stat.isDirectory(), stat.isFile())
     if (stat) { //判断文件、文件目录是否存在
         if (stat.isFile()) {
             fileArr.push(dirPath);
@@ -108,7 +107,6 @@ class Hints  {
     }
     generateServiceCompletionItems(){
         const items = [];
-        console.log('generateServiceCompletionItems');
         for (let className in this.serviceMap) {
             let item = new vscode.CompletionItem(className, vscode.CompletionItemKind.Class);
             item.insertText = className;
@@ -168,22 +166,6 @@ class Hints  {
     getMethodDefineItems(): Map {
         return methodDefineMap;
     }
-    isProxyFacade(document: vscode.TextDocument, position: vscode.Position): boolean {
-        const lineText = document.lineAt(position).text;
-        const pos = position.character;
-
-        // 检查是不是 proxy.
-        return lineText.substring(pos - 6, pos) === 'proxy.';
-    }
-    isProxyFacadeMethod(document: vscode.TextDocument, position: vscode.Position, facades: Array<string>): string | null {
-        const lineText = document.lineAt(position).text;
-        const word = this.getWordBeforePosition(document, position);
-        // 检查是不是 proxy.
-        if (facades.indexOf(word) > -1) {
-            return word;
-        }
-        return null;
-    }
     getWordBeforePosition(document: vscode.TextDocument, position: vscode.Position): string {
         const lineTextBefore = this.getTextBeforePosition(document, position);
         return lineTextBefore;
@@ -204,7 +186,6 @@ class Hints  {
         if (lineText.endsWith('proxy')) {
             return proxyCompletionItems;
         }
-        console.log('lineText', lineText, serviceCompletionItems);
         // this.service
         if (lineText.endsWith('service')) {
             return serviceCompletionItems;

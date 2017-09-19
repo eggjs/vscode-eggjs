@@ -5,7 +5,6 @@ import { EggDependenciesProvider } from './EggDependencies';
 import { EggConfigProvider } from './EggConfig';
 import Hints from './hints/index';
 const hint = new Hints(vscode.workspace.rootPath);
-//const DefinitionProvider = require('./hints/providers/definition');
 const DOCUMENT_SELECTOR = ['javascript'];
 
 // this method is called when your extension is activated
@@ -39,8 +38,6 @@ export function activate(context: vscode.ExtensionContext) {
     }, '.');
     const subscriptions = context.subscriptions;
     subscriptions.push(completion);
-    // const definition = vscode.languages.registerDefinitionProvider(DOCUMENT_SELECTOR, new DefinitionProvider());
-    // subscriptions.push(definition);
 }
 
 // this method is called when your extension is deactivated

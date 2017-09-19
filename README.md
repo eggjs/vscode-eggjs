@@ -13,10 +13,14 @@ https://github.com/eggjs/vscode-eggjs
 - [x] snippets
 - [x] list egg dependencies
 - [x] list app config
+- [x] support proxy & service autocomplete suggestion
 - [ ] startDebug
 - [ ] init vscode settings
 
 ![](https://github.com/eggjs/vscode-eggjs/raw/master/snapshot.png)
+![](https://github.com/eggjs/vscode-eggjs/raw/master/resources/imgs/proxy.png)
+![](https://github.com/eggjs/vscode-eggjs/raw/master/resources/imgs/service.png)
+![](https://github.com/eggjs/vscode-eggjs/raw/master/resources/imgs/method.png)
 
 ## Requirements
 

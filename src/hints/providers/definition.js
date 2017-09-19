@@ -1,11 +1,9 @@
 const vscode = require('vscode');
 const path = require('path');
 const util = require('util');
-import { Hints } from '../index';
-const methodDefineMap = Hints.getMethodDefineItems();
 class DefinitionProvider {
-    constructor() {
-
+    constructor(hint) {
+        this.hint = hint;
     }
     provideDefinition(document, position, cancelToken) {
         const line = document.lineAt(position.line);
