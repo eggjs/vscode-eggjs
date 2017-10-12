@@ -2,7 +2,7 @@
   "name": "eggjs",
   "displayName": "eggjs",
   "description": "vscode extension for https://eggjs.org/",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "publisher": "atian25",
   "homepage": "https://github.com/eggjs/vscode-eggjs",
   "repository": {
@@ -20,19 +20,38 @@
   ],
   "activationEvents": [
     "onView:eggDependencies",
-    "onView:eggConfig"
+    "onView:eggConfig",
+    "workspaceContains:node_modules/egg/package.json"
   ],
   "main": "./out/src/extension",
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "eggjs options",
+      "properties": {
+        "eggjs.sidebar.dependencies": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show or hide the Dependencies Explorer."
+        },
+        "eggjs.sidebar.config": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show or hide the Config Explorer."
+        }
+      }
+    },
     "views": {
       "explorer": [
         {
           "id": "eggDependencies",
-          "name": "Egg Dependencies"
+          "name": "Egg Dependencies",
+          "when": "config.eggjs.sidebar.dependencies"
         },
         {
           "id": "eggConfig",
-          "name": "Egg Config"
+          "name": "Egg Config",
+          "when": "config.eggjs.sidebar.config"
         }
       ]
     },
