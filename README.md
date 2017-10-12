@@ -39,6 +39,7 @@ This extension contributes the following settings:
 
 ## Release Notes
 
+<!-- https://atian25.visualstudio.com/_details/security/tokens -->
 
 -----------------------------------------------------------------------------------------------------------
 

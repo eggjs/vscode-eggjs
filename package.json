@@ -10,7 +10,7 @@
     "url": "git@github.com:eggjs/vscode-eggjs.git"
   },
   "engines": {
-    "vscode": "^1.15.0"
+    "vscode": "^1.17.0"
   },
   "icon": "resources/eggjs.png",
   "categories": [
@@ -109,10 +109,11 @@
     "node-homedir": "^1.0.0"
   },
   "devDependencies": {
-    "typescript": "^2.0.3",
-    "vscode": "^1.0.0",
-    "mocha": "^2.3.3",
+    "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.40",
-    "@types/mocha": "^2.2.32"
+    "autod": "^2.10.1",
+    "mocha": "^2.3.3",
+    "typescript": "^2.0.3",
+    "vscode": "^1.0.0"
   }
 }
