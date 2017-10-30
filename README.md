@@ -12,7 +12,7 @@ https://github.com/eggjs/vscode-eggjs
 
 ### Snippet
 
-- set `eggjs.snippet.preferAsync` to false if you need `generator` style.
+- config `eggjs.snippet.fnStyle` to your prefer function style such as `async`, keep `null` to show prompt.
 
 ![](https://github.com/eggjs/vscode-eggjs/raw/master/snapshot/snippet.gif)
 

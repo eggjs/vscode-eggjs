@@ -9,12 +9,15 @@ import { CompletionItem, CompletionItemKind, ExtensionContext, workspace } from 
 
 export function init(context: ExtensionContext) {
   const cwd = vscode.workspace.rootPath;
-  const config = workspace.getConfiguration('eggjs.snippet');
+
+  // get config
+  let config = workspace.getConfiguration('eggjs.snippet');
+  workspace.onDidChangeConfiguration(() => {
+    config = workspace.getConfiguration('eggjs.snippet');
+  });
 
   // get framework name
   const framework = context.workspaceState.get('eggjs.framework');
-
-  const fnStyle = config.preferAsync ? 'async' : '*';
 
   // preset of snippets
   const snippets = {
@@ -24,7 +27,7 @@ export function init(context: ExtensionContext) {
       const Service = require('${framework}').Service;
 
       class \${TM_FILE_CLASS}Service extends Service {
-        ${fnStyle} \${1:echo}() {
+        \${TM_STYLE_FN} \${2:echo}() {
           $0
         }
       }
@@ -38,7 +41,7 @@ export function init(context: ExtensionContext) {
       const Controller = require('${framework}').Controller;
 
       class \${TM_FILE_CLASS}Controller extends Controller {
-        ${fnStyle} \${1:echo}() {
+        \${TM_STYLE_FN} \${2:echo}() {
           $0
         }
       }
@@ -51,6 +54,12 @@ export function init(context: ExtensionContext) {
   context.subscriptions.push(vscode.languages.registerCompletionItemProvider([ 'javascript' ], {
     provideCompletionItems() {
       return Object.keys(snippets).map(key => new SnippetCompletionItem(`egg ${key}`, stripIndent`${snippets[key]}` + '\n'));
+    },
+    resolveCompletionItem(item: CompletionItem, token: vscode.CancellationToken): vscode.CompletionItem {
+      //FIXME: hacky, replace fn style
+      const snippet = item.insertText as SnippetString;
+      snippet.value = snippet.value.replace(/\$\{TM_STYLE_FN}/g, config.fnStyle || '${1|async,*|}');
+      return item;
     }
   }));
 }
@@ -63,6 +72,7 @@ export class SnippetCompletionItem extends CompletionItem {
 }
 
 export class SnippetString extends vscode.SnippetString {
+  public value;
   constructor(value: string, locals: object = {}) {
     // preset variable
     locals = Object.assign({}, {
