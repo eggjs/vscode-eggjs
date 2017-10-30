@@ -10,7 +10,7 @@ export default abstract class TreeProvider implements TreeDataProvider<TreeItem>
 
   protected rootNodes: TreeItem[];
 
-  constructor(protected workspaceRoot: string) {}
+  constructor(protected baseDir: string) {}
 
   refresh(data?: TreeItem): void {
     this.emitter.fire(data);

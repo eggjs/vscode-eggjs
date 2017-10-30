@@ -10,13 +10,38 @@ https://github.com/eggjs/vscode-eggjs
 
 ## Features
 
-- [x] snippets
-- [x] list egg dependencies
-- [x] list app config
-- [ ] startDebug
-- [ ] init vscode settings
+### Snippet
 
-![](https://github.com/eggjs/vscode-eggjs/raw/master/snapshot.png)
+![](https://github.com/eggjs/vscode-eggjs/raw/master/snapshot/snippet.gif)
+
+### Debugger
+
+![](https://github.com/eggjs/vscode-eggjs/raw/master/snapshot/debugger.gif)
+
+### Config Inspect
+
+![](https://github.com/eggjs/vscode-eggjs/raw/master/snapshot/config.gif)
+
+## TODO
+
+- snippets
+  - [x] service
+  - [x] controller
+  - [x] plugin
+  - [x] config
+  - [ ] support create command
+- debugger
+  - [x] init debug configuration
+  - [ ] debug configuration snippets
+  - [ ] support `inspect-brk`
+  - [ ] auto attach
+- smart intellisense
+  - [ ] complete items
+  - [ ] language server
+  - [ ] ts
+- config inspector
+  - [x] tree panel
+  - [ ] refactor to codelens / tip, no panel.
 
 ## Requirements
 

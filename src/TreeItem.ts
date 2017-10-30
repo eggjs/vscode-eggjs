@@ -18,7 +18,7 @@ export class FileTreeItem extends TreeItem {
   constructor(
     public readonly label: string,
     public readonly path: string,
-    public readonly iconPath: any,
+    public readonly iconPath?: any,
   ) {
     super(label, true);
     // TODO: only expand one

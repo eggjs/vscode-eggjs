@@ -7,14 +7,14 @@ import * as clearModule from 'clear-module';
 import * as globby from 'globby';
 import * as homedir from 'node-homedir';
 import * as is from 'is-type-of';
+import { ExtensionContext, workspace, window, commands } from 'vscode';
 import TreeProvider from './TreeProvider';
 
 import { TreeItem, FileTreeItem, UrlTreeItem, ICON } from './TreeItem';
 
-export function init(context: vscode.ExtensionContext) {
-  const { commands, workspace, window, Uri } = vscode;
-  const rootPath = workspace.rootPath;
-  const treeProvider = new EggConfigProvider(rootPath);
+export function init(context: ExtensionContext) {
+  const cwd = workspace.rootPath;
+  const treeProvider = new EggConfigProvider(cwd);
   window.registerTreeDataProvider('eggConfig', treeProvider);
   commands.registerCommand('eggConfig.refreshEntry', () => treeProvider.refresh());
 }
@@ -24,7 +24,7 @@ export class EggConfigProvider extends TreeProvider {
     super(workspaceRoot);
     // const watcher = vscode.workspace.createFileSystemWatcher('config/config.*.js');
     const prefix = path.join(workspaceRoot, 'config/config.');
-    vscode.workspace.onDidSaveTextDocument(e => {
+    workspace.onDidSaveTextDocument(e => {
       if (e.fileName.startsWith(prefix)) {
         this.refresh();
       }
@@ -32,18 +32,18 @@ export class EggConfigProvider extends TreeProvider {
   }
 
   async getRootNodes(): Promise<TreeItem[]> {
-    const cwd = path.join(this.workspaceRoot, 'config');
+    const cwd = path.join(this.baseDir, 'config');
     const result = await globby(['config.*.js'], { cwd });
-    const pkgInfo = require(path.join(this.workspaceRoot, 'package.json'));
+    const pkgInfo = require(path.join(this.baseDir, 'package.json'));
     const HOME = homedir();
 
     const nodeList = result.map(item => {
       const appInfo = {
         pkg: pkgInfo,
         name: pkgInfo.name,
-        baseDir: this.workspaceRoot,
+        baseDir: this.baseDir,
         HOME,
-        root: (item === 'config.local.js' || item === 'config.unittest.js') ? this.workspaceRoot : HOME,
+        root: (item === 'config.local.js' || item === 'config.unittest.js') ? this.baseDir : HOME,
       };
       const node = new EggConfigTreeItem(item, path.join(cwd, item), appInfo);
       return node;

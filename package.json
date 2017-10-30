@@ -2,7 +2,7 @@
   "name": "eggjs",
   "displayName": "eggjs",
   "description": "vscode extension for https://eggjs.org/",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "publisher": "atian25",
   "homepage": "https://github.com/eggjs/vscode-eggjs",
   "repository": {
@@ -19,9 +19,7 @@
     "Snippets"
   ],
   "activationEvents": [
-    "onView:eggDependencies",
-    "onView:eggConfig",
-    "workspaceContains:node_modules/egg/package.json"
+    "*"
   ],
   "main": "./out/src/extension",
   "contributes": {
@@ -29,35 +27,40 @@
       "type": "object",
       "title": "eggjs options",
       "properties": {
-        "eggjs.sidebar.dependencies": {
-          "type": "boolean",
-          "default": true,
-          "description": "Show or hide the Dependencies Explorer."
+        "eggjs.framework": {
+          "type": "string[]",
+          "default": [],
+          "description": "Additional framework names"
         },
         "eggjs.sidebar.config": {
           "type": "boolean",
           "default": true,
           "description": "Show or hide the Config Explorer."
+        },
+        "eggjs.sidebar.test": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show or hide the Test Explorer."
         }
       }
     },
     "views": {
       "explorer": [
         {
-          "id": "eggDependencies",
-          "name": "Egg Dependencies",
-          "when": "config.eggjs.sidebar.dependencies"
-        },
-        {
           "id": "eggConfig",
           "name": "Egg Config",
-          "when": "config.eggjs.sidebar.config"
+          "when": "isEgg && config.eggjs.sidebar.config"
+        },
+        {
+          "id": "eggTest",
+          "name": "Egg Unit Test",
+          "when": "false"
         }
       ]
     },
     "commands": [
       {
-        "command": "eggDependencies.refreshEntry",
+        "command": "eggConfig.refreshEntry",
         "title": "Refresh",
         "icon": {
           "light": "resources/light/refresh.svg",
@@ -65,8 +68,24 @@
         }
       },
       {
-        "command": "eggConfig.refreshEntry",
+        "command": "eggTest.refreshEntry",
         "title": "Refresh",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "eggTest.runOnly",
+        "title": "run only",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "eggTest.toggle",
+        "title": "toggle(only/skip)",
         "icon": {
           "light": "resources/light/refresh.svg",
           "dark": "resources/dark/refresh.svg"
@@ -76,14 +95,24 @@
     "menus": {
       "view/title": [
         {
-          "command": "eggDependencies.refreshEntry",
-          "when": "view == eggDependencies",
-          "group": "navigation"
-        },
-        {
           "command": "eggConfig.refreshEntry",
           "when": "view == eggConfig",
           "group": "navigation"
+        },
+        {
+          "command": "eggTest.refreshEntry",
+          "when": "view == eggTest",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "eggTest.runOnly",
+          "when": "view == eggTest"
+        },
+        {
+          "command": "eggTest.toggle",
+          "when": "view == eggTest"
         }
       ]
     },
@@ -91,6 +120,16 @@
       {
         "language": "javascript",
         "path": "./snippets/egg.json"
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "Egg",
+        "label": "Egg",
+        "languages": [
+          "javascript",
+          "typescript"
+        ]
       }
     ]
   },
@@ -103,10 +142,13 @@
   },
   "dependencies": {
     "clear-module": "^2.1.0",
+    "common-tags": "^1.4.0",
+    "egg-utils": "^2.3.0",
     "globby": "^6.1.0",
     "is-type-of": "^1.2.0",
     "mz": "^2.6.0",
-    "node-homedir": "^1.0.0"
+    "node-homedir": "^1.0.0",
+    "vsce": "^1.31.1"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.32",
@@ -115,5 +157,6 @@
     "mocha": "^2.3.3",
     "typescript": "^2.0.3",
     "vscode": "^1.0.0"
-  }
+  },
+  "license": "MIT"
 }
