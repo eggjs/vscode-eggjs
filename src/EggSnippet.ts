@@ -5,13 +5,16 @@ import * as path from 'path';
 import { fs } from 'mz';
 import { stripIndent } from 'common-tags';
 import { getFrameworkOrEggPath } from 'egg-utils';
-import { CompletionItem, CompletionItemKind, ExtensionContext } from 'vscode';
+import { CompletionItem, CompletionItemKind, ExtensionContext, workspace } from 'vscode';
 
 export function init(context: ExtensionContext) {
   const cwd = vscode.workspace.rootPath;
+  const config = workspace.getConfiguration('eggjs.snippet');
 
   // get framework name
   const framework = context.workspaceState.get('eggjs.framework');
+
+  const fnStyle = config.preferAsync ? 'async' : '*';
 
   // preset of snippets
   const snippets = {
@@ -21,7 +24,7 @@ export function init(context: ExtensionContext) {
       const Service = require('${framework}').Service;
 
       class \${TM_FILE_CLASS}Service extends Service {
-        async \${1:echo}() {
+        ${fnStyle} \${1:echo}() {
           $0
         }
       }
@@ -35,7 +38,7 @@ export function init(context: ExtensionContext) {
       const Controller = require('${framework}').Controller;
 
       class \${TM_FILE_CLASS}Controller extends Controller {
-        async \${1:echo}() {
+        ${fnStyle} \${1:echo}() {
           $0
         }
       }

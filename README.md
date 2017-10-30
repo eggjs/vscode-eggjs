@@ -12,6 +12,8 @@ https://github.com/eggjs/vscode-eggjs
 
 ### Snippet
 
+- set `eggjs.snippet.preferAsync` to false if you need `generator` style.
+
 ![](https://github.com/eggjs/vscode-eggjs/raw/master/snapshot/snippet.gif)
 
 ### Debugger
@@ -29,6 +31,7 @@ https://github.com/eggjs/vscode-eggjs
   - [x] controller
   - [x] plugin
   - [x] config
+  - [ ] auto detect async / generator style
   - [ ] support create command
 - debugger
   - [x] init debug configuration
