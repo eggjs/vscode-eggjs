@@ -44,7 +44,12 @@ https://github.com/eggjs/vscode-eggjs
   - [ ] ts
 - config inspector
   - [x] tree panel
-  - [ ] refactor to codelens / tip, no panel.
+  - [ ] refactor to `Find All References`, no panel.
+- test support
+  - [ ] test tree panel
+  - [ ] run only
+  - [ ] toggle skip / only
+
 
 ## Requirements
 
