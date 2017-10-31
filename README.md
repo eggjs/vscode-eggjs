@@ -44,11 +44,15 @@ https://github.com/eggjs/vscode-eggjs
   - [ ] ts
 - config inspector
   - [x] tree panel
-  - [ ] refactor to `Find All References`, no panel.
+  - [ ] refactor to `Find All References` / codelens, no panel.
 - test support
   - [ ] test tree panel
   - [ ] run only
   - [ ] toggle skip / only
+- code lint
+  - custom eslint rule
+  - or `Possible Actions on Errors or Warnings` / `CodeAction`
+- `d.ts` support improve
 
 
 ## Requirements
@@ -69,6 +73,10 @@ This extension contributes the following settings:
 -->
 
 ## Known Issues
+
+## Resources
+- https://code.visualstudio.com/docs/extensionAPI/language-support
+- https://github.com/Microsoft/vscode-extension-samples
 
 ## Release Notes
 
