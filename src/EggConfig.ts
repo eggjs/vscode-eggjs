@@ -7,7 +7,7 @@ import * as clearModule from 'clear-module';
 import * as globby from 'globby';
 import * as homedir from 'node-homedir';
 import * as is from 'is-type-of';
-import { ExtensionContext, workspace, window, commands } from 'vscode';
+import { ExtensionContext, workspace, window, commands, TextDocument, Position, Definition, Location } from 'vscode';
 import TreeProvider from './TreeProvider';
 
 import { TreeItem, FileTreeItem, UrlTreeItem, ICON } from './TreeItem';
@@ -17,6 +17,28 @@ export function init(context: ExtensionContext) {
   const treeProvider = new EggConfigProvider(cwd);
   window.registerTreeDataProvider('eggConfig', treeProvider);
   commands.registerCommand('eggConfig.refreshEntry', () => treeProvider.refresh());
+
+  context.subscriptions.push(
+    vscode.languages.registerDefinitionProvider([ 'javascript', 'typescript'], {
+      async provideDefinition(document: TextDocument, position: Position): Promise<Definition> {
+        const line = document.lineAt(position);
+        const wordRange = document.getWordRangeAtPosition(position);
+        const word = document.getText(wordRange);
+
+        const part = line.text.substring(0, wordRange.end.character);
+        const m = part.match(new RegExp(`\\bconfig\\.((?:\\w+\\.)*${word})$`));
+        const property = m && m[1];
+
+        if (property) {
+          console.log(property);
+          return [
+            new Location(vscode.Uri.file(path.join(cwd, 'config/config.default.js')), new vscode.Range(new Position(12, 4), new Position(12, 29))),
+            new Location(vscode.Uri.file(path.join(cwd, 'config/config.local.js')), new vscode.Range(new Position(3, 2), new Position(3, 22))),
+          ];
+        }
+      }
+    })
+  );
 }
 
 export class EggConfigProvider extends TreeProvider {
