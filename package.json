@@ -156,6 +156,7 @@
     "clear-module": "^2.1.0",
     "common-tags": "^1.4.0",
     "ecma-variable-scope": "^2.1.0",
+    "egg-ast-utils": "^0.1.0",
     "egg-utils": "^2.3.0",
     "esprima": "^4.0.0",
     "globby": "^6.1.0",

@@ -7,6 +7,7 @@ import * as EggConfig from './EggConfig';
 import * as EggSnippet from './EggSnippet';
 import * as EggDebugger from './EggDebugger';
 import { ExtensionContext, commands, workspace, window, Uri } from 'vscode';
+import * as globby from 'globby';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -22,11 +23,11 @@ export async function activate(context: ExtensionContext) {
     if (framework) {
         // load config sidebar only if at egg project
         await commands.executeCommand("setContext", "isEgg", true);
-        EggConfig.init(context);
-        EggDebugger.init(context);
+        await EggConfig.init(context);
+        await EggDebugger.init(context);
     }
 
-    EggSnippet.init(context);
+    await EggSnippet.init(context);
     // EggTest.init(context);
 
     commands.registerCommand('extension.openFile', async filePath => {

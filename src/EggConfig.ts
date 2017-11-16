@@ -7,34 +7,60 @@ import * as clearModule from 'clear-module';
 import * as globby from 'globby';
 import * as homedir from 'node-homedir';
 import * as is from 'is-type-of';
-import { ExtensionContext, workspace, window, commands, TextDocument, Position, Definition, Location } from 'vscode';
+import { ExtensionContext, workspace, window, commands, TextDocument, Position, Definition, Location, Range } from 'vscode';
 import TreeProvider from './TreeProvider';
+import { FileCache } from './FileUtils';
+import * as ASTUtils from 'egg-ast-utils';
 
 import { TreeItem, FileTreeItem, UrlTreeItem, ICON } from './TreeItem';
 
-export function init(context: ExtensionContext) {
+export async function init(context: ExtensionContext) {
   const cwd = workspace.rootPath;
   const treeProvider = new EggConfigProvider(cwd);
   window.registerTreeDataProvider('eggConfig', treeProvider);
   commands.registerCommand('eggConfig.refreshEntry', () => treeProvider.refresh());
 
+  // monitor config files
+  const fileCache = new FileCache('**/config/config.*.js', (content, uri) => {
+    return ASTUtils.parseNormal(content);
+  });
+  context.subscriptions.push(fileCache);
+
+  const w = workspace.createFileSystemWatcher('**/run/application_config_meta.json');
+  w.onDidChange(async uri => {
+    const a = await fs.stat(uri.fsPath);
+    console.log('change', uri, a);
+  });
+
   context.subscriptions.push(
-    vscode.languages.registerDefinitionProvider([ 'javascript', 'typescript'], {
+    vscode.languages.registerDefinitionProvider('javascript', {
       async provideDefinition(document: TextDocument, position: Position): Promise<Definition> {
         const line = document.lineAt(position);
+        // extract the closest word
         const wordRange = document.getWordRangeAtPosition(position);
         const word = document.getText(wordRange);
-
+        // extract the closest `config.xxx`
         const part = line.text.substring(0, wordRange.end.character);
         const m = part.match(new RegExp(`\\bconfig\\.((?:\\w+\\.)*${word})$`));
         const property = m && m[1];
 
         if (property) {
-          console.log(property);
-          return [
-            new Location(vscode.Uri.file(path.join(cwd, 'config/config.default.js')), new vscode.Range(new Position(12, 4), new Position(12, 29))),
-            new Location(vscode.Uri.file(path.join(cwd, 'config/config.local.js')), new vscode.Range(new Position(3, 2), new Position(3, 22))),
-          ];
+          const files = await fileCache.readFiles('**/config/config.*.js', 'node_modules');
+          const result = [];
+          for (const { content, uri } of files) {
+            const configNode = content.get(property);
+            if (configNode) {
+              for (const node of configNode.nodes) {
+                console.log(node)
+                const start = new Position(node.loc.start.line - 1, node.loc.start.column);
+                const end = new Position(node.loc.end.line -1, node.loc.end.column);
+                const range = new Range(start, end);
+                const loc = new Location(uri, range);
+                result.push(loc);
+              }
+            }
+          }
+          return result;
         }
       }
     })
