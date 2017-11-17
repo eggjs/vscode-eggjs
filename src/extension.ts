@@ -17,6 +17,8 @@ export async function activate(context: ExtensionContext) {
     const cwd = workspace.rootPath;
     const config = workspace.getConfiguration('eggjs');
 
+    if (!cwd) return;
+
     const framework = await utils.getFramework(cwd);
     await context.workspaceState.update('eggjs.framework', framework);
 
