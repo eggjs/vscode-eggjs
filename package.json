@@ -44,11 +44,6 @@
           "default": null,
           "description": "Snippet function style"
         },
-        "eggjs.sidebar.config": {
-          "type": "boolean",
-          "default": true,
-          "description": "Show or hide the Config Explorer."
-        },
         "eggjs.sidebar.test": {
           "type": "boolean",
           "default": true,
@@ -59,11 +54,6 @@
     "views": {
       "explorer": [
         {
-          "id": "eggConfig",
-          "name": "Egg Config",
-          "when": "isEgg && config.eggjs.sidebar.config"
-        },
-        {
           "id": "eggTest",
           "name": "Egg Unit Test",
           "when": "false"
@@ -71,14 +61,6 @@
       ]
     },
     "commands": [
-      {
-        "command": "eggConfig.refreshEntry",
-        "title": "Refresh",
-        "icon": {
-          "light": "resources/light/refresh.svg",
-          "dark": "resources/dark/refresh.svg"
-        }
-      },
       {
         "command": "eggTest.refreshEntry",
         "title": "Refresh",
@@ -106,11 +88,6 @@
     ],
     "menus": {
       "view/title": [
-        {
-          "command": "eggConfig.refreshEntry",
-          "when": "view == eggConfig",
-          "group": "navigation"
-        },
         {
           "command": "eggTest.refreshEntry",
           "when": "view == eggTest",
@@ -153,19 +130,14 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "dependencies": {
-    "clear-module": "^2.1.0",
     "common-tags": "^1.4.0",
-    "ecma-variable-scope": "^2.1.0",
     "egg-ast-utils": "^0.5.1",
     "egg-utils": "^2.3.0",
-    "esprima": "^4.0.0",
     "globby": "^6.1.0",
     "is-type-of": "^1.2.0",
     "lodash.get": "^4.4.2",
     "mz": "^2.6.0",
-    "node-homedir": "^1.0.0",
-    "semver": "^5.4.1",
-    "vsce": "^1.31.1"
+    "semver": "^5.4.1"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.32",
@@ -173,7 +145,8 @@
     "autod": "^2.10.1",
     "mocha": "^2.3.3",
     "typescript": "^2.0.3",
-    "vscode": "^1.0.0"
+    "vscode": "^1.0.0",
+    "vsce": "^1.31.1"
   },
   "license": "MIT"
 }
