@@ -42,6 +42,16 @@ export function init(context: ExtensionContext) {
           "runtimeArgs": ["run", "test-local", "--", "--inspect-brk"],
           "protocol": "auto",
           "port": 9229
+        },
+        {
+          "type": "node",
+          "request": "attach",
+          "name": "Egg Attach to remote",
+          "localRoot": "${workspaceRoot}",
+          "remoteRoot": "/usr/src/app",
+          "address": "localhost",
+          "protocol": "auto",
+          "port": 9999
         }
       ];
     },
