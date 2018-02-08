@@ -17,7 +17,7 @@ export function init(context: ExtensionContext) {
   });
 
   // get framework name
-  const framework = context.workspaceState.get('eggjs.framework');
+  const framework = context.workspaceState.get('eggjs.framework', 'egg');
 
   // preset of snippets
   const snippets = {

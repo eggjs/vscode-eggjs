@@ -36,8 +36,8 @@ https://github.com/eggjs/vscode-eggjs
 - debugger
   - [x] init debug configuration
   - [ ] debug configuration snippets
-  - [ ] support `inspect-brk`
-  - [ ] auto attach
+  - [x] support `inspect-brk`
+  - [x] auto attach
 - smart intellisense
   - [ ] complete items
   - [ ] language server

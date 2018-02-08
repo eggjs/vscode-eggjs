@@ -20,10 +20,10 @@ export async function activate(context: ExtensionContext) {
     if (!cwd) return;
 
     const framework = await utils.getFramework(cwd);
-    await context.workspaceState.update('eggjs.framework', framework);
 
     if (framework) {
         // load config sidebar only if at egg project
+        await context.workspaceState.update('eggjs.framework', framework);
         await commands.executeCommand("setContext", "isEgg", true);
         await EggConfig.init(context);
         await EggDebugger.init(context);

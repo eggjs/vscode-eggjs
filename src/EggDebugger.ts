@@ -19,20 +19,12 @@ export function init(context: ExtensionContext) {
           "request": "launch",
           "name": "Egg Debug",
           "runtimeExecutable": "npm",
-          "runtimeArgs": ["run", "debug"],
+          "runtimeArgs": ["run", "debug", "--", "--inspect-brk"],
           "console": "integratedTerminal",
           "restart": true,
           "protocol": "auto",
-          "port": 9999
-        },
-        {
-          "type": "node",
-          "request": "launch",
-          "name": "Egg Debug with brk",
-          "runtimeExecutable": "npm",
-          "runtimeArgs": ["run", "debug", "--", "--inspect-brk"],
-          "protocol": "inspector",
-          "port": 9229
+          "port": 9229,
+          "autoAttachChildProcesses": true
         },
         {
           "type": "node",
@@ -41,7 +33,8 @@ export function init(context: ExtensionContext) {
           "runtimeExecutable": "npm",
           "runtimeArgs": ["run", "test-local", "--", "--inspect-brk"],
           "protocol": "auto",
-          "port": 9229
+          "port": 9229,
+          "autoAttachChildProcesses": true
         },
         {
           "type": "node",
@@ -57,23 +50,23 @@ export function init(context: ExtensionContext) {
     },
   }));
 
-  const agentConfig: DebugConfiguration = {
-    "type": "node",
-    "request": "attach",
-    "name": "Egg Agent",
-    "restart": true,
-    "protocol": "inspector",
-    "port": 5800
-  };
+  // const agentConfig: DebugConfiguration = {
+  //   "type": "node",
+  //   "request": "attach",
+  //   "name": "Egg Agent",
+  //   "restart": true,
+  //   "protocol": "inspector",
+  //   "port": 5800
+  // };
 
-  const workerConfig: DebugConfiguration = {
-    "type": "node",
-    "request": "attach",
-    "name": "Egg Worker",
-    "restart": true,
-    "protocol": "inspector",
-    "port": 9999
-  };
+  // const workerConfig: DebugConfiguration = {
+  //   "type": "node",
+  //   "request": "attach",
+  //   "name": "Egg Worker",
+  //   "restart": true,
+  //   "protocol": "inspector",
+  //   "port": 9999
+  // };
 
 
   // debug.onDidStartDebugSession(e => {
