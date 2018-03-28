@@ -2,7 +2,7 @@
   "name": "eggjs",
   "displayName": "eggjs",
   "description": "vscode extension for https://eggjs.org/",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "atian25",
   "homepage": "https://github.com/eggjs/vscode-eggjs",
   "repository": {
