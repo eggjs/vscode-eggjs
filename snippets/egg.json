@@ -29,5 +29,35 @@
       "};",
       ""
     ]
-  }
+  },
+  "service": {
+    "prefix": "egg service",
+    "body": [
+      "'use strict';",
+      "",
+      "const Service = require('egg').Service;",
+      "",
+      "class $1Service extends Service {",
+      "  $2",
+      "}",
+      "",
+      "module.exports = $1Service;",
+      ""
+    ]
+  },
+  "controller": {
+    "prefix": "egg controller",
+    "body": [
+      "'use strict';",
+      "",
+      "const Controller = require('egg').Controller;",
+      "",
+      "class $1Controller extends Controller {",
+      "  $2",
+      "}",
+      "",
+      "module.exports = $1Controller;",
+      ""
+    ]
+  },
 }
